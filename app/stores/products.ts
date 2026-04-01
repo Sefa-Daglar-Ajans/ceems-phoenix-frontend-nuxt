@@ -1,65 +1,68 @@
-// stores/products.ts
 import { defineStore } from 'pinia'
 
-export const useProductStore = defineStore('products', () => {
-  // Mevcut ürünlerin listesi (Varsayılan veriler)
-  const products = ref([
-    { 
-      id: 1, 
-      name: 'MitoViora X-Y', 
-      price: 1250, 
-      category: 'PHARMA', 
-      statusLabel: '30 SAŞE', 
-      image: '/images/mitoviora.jpg',
-      description: 'Yüksek biyoyararlanıma sahip Mito serisi formülü.' 
+export const useProductStore = defineStore('products', {
+  state: () => ({
+    // PDF 5. Maddeye Göre Başlangıç Verileri
+    products: [
+      { 
+        id: 1, 
+        name: 'MitoViora X-Y', 
+        series: 'Mito Serisi', 
+        code: 'CP-101', 
+        description: 'Yüksek biyoyararlanıma sahip formül.', 
+        image: '/images/mitoviora.jpg', 
+        slogan: 'Zamanı durduramıyor, çözümü hızlandırıyoruz.', 
+        content: 'L-Arginine, L-Carnitine, Coenzyme Q10...', 
+        price: 1250 
+      },
+      { 
+        id: 2, 
+        name: 'MitoRegenix X-Y', 
+        series: 'Mito Serisi', 
+        code: 'CP-102', 
+        description: 'Hücresel yenilenmeyi destekler.', 
+        image: '/images/mitoregenix.jpg', 
+        slogan: 'Bilimin rehberliğinde yenilenin.',
+        content: 'Alpha Lipoic Acid, Glutathione...', 
+        price: 1450 
+      },
+      { 
+        id: 3, 
+        name: 'MitoAndro Y', 
+        series: 'Mito Serisi', 
+        code: 'CP-103', 
+        description: 'Erkek sağlığına yönelik destek.', 
+        image: '/images/mitoandro.jpg', 
+        slogan: 'Erkek sağlığı için Phoenix gücü.',
+        content: 'Tribulus Terrestris, Maca Root...', 
+        price: 1100 
+      },
+      { 
+        id: 4, 
+        name: 'MitoOva X', 
+        series: 'Mito Serisi', 
+        code: 'CP-104', 
+        description: 'Kadın sağlığı dengeleyici.', 
+        image: '/images/mitoova.jpg', 
+        slogan: 'Kadın sağlığında bilimsel denge.',
+        content: 'Inositol, Folic Acid...', 
+        price: 1350 
+      }
+    ]
+  }),
+  actions: {
+    updateProduct(updatedProduct: any) {
+      const index = this.products.findIndex(p => p.id === updatedProduct.id)
+      if (index !== -1) {
+        this.products[index] = { ...updatedProduct }
+      }
     },
-    { 
-      id: 2, 
-      name: 'MitoRegenix X-Y', 
-      price: 1450, 
-      category: 'PHARMA', 
-      statusLabel: '30 SAŞE', 
-      image: '/images/mitoregenix.jpg',
-      description: 'Hücresel yenilenmeyi destekleyen özel içerik.' 
+    addProduct(newProduct: any) {
+      const nextId = this.products.length > 0 ? Math.max(...this.products.map(p => p.id)) + 1 : 1
+      this.products.push({ ...newProduct, id: nextId })
     },
-    { 
-      id: 3, 
-      name: 'MitoAndro Y', 
-      price: 1100, 
-      category: 'PHARMA', 
-      statusLabel: '30 SAŞE', 
-      image: '/images/mitoandro.jpg',
-      description: 'Erkek sağlığına yönelik bilimsel destek.' 
-    },
-    { 
-      id: 4, 
-      name: 'MitoOva X', 
-      price: 1350, 
-      category: 'PHARMA', 
-      statusLabel: '30 SAŞE', 
-      image: '/images/mitoova.jpg',
-      description: 'Kadın sağlığı ve dengeleyici formülasyon.' 
+    deleteProduct(id: number) {
+      this.products = this.products.filter(p => p.id !== id)
     }
-  ])
-
-  // Ürün Güncelleme Fonksiyonu
-  const updateProduct = (updatedProduct: any) => {
-    const index = products.value.findIndex(p => p.id === updatedProduct.id)
-    if (index !== -1) {
-      products.value[index] = { ...updatedProduct }
-    }
   }
-
-  // Yeni Ürün Ekleme
-  const addProduct = (newProduct: any) => {
-    const id = products.value.length + 1
-    products.value.push({ ...newProduct, id })
-  }
-
-  // Ürün Silme
-  const deleteProduct = (id: number) => {
-    products.value = products.value.filter(p => p.id !== id)
-  }
-
-  return { products, updateProduct, addProduct, deleteProduct }
 })
