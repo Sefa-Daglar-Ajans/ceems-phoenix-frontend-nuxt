@@ -1,11 +1,11 @@
 import { defineStore } from 'pinia'
-import type { Product, CartItem } from '~/types'
+import type { GuestCartItem } from '~/types'
 
 const COOKIE_NAME = 'ceems-cart'
-const COOKIE_MAX_AGE = 60 * 60 * 24 * 30 // 30 days
+const COOKIE_MAX_AGE = 60 * 60 * 24 * 30
 
 export const useCartStore = defineStore('cart', () => {
-  const cartCookie = useCookie<CartItem[]>(COOKIE_NAME, {
+  const cartCookie = useCookie<GuestCartItem[]>(COOKIE_NAME, {
     default: () => [],
     maxAge: COOKIE_MAX_AGE,
     watch: true,
@@ -21,7 +21,7 @@ export const useCartStore = defineStore('cart', () => {
     items.value.reduce((sum, item) => sum + item.price * item.quantity, 0),
   )
 
-  function addToCart(product: Product) {
+  function addToCart(product: Omit<GuestCartItem, 'quantity'>) {
     const current = [...(cartCookie.value ?? [])]
     const existing = current.find(item => item.id === product.id)
     if (existing) {
