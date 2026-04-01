@@ -2,12 +2,12 @@
 const cartStore = useCartStore()
 
 const products = [
-  { id: 'mitoviora', name: 'MitoViora X-Y', price: 1250, description: 'Hücresel Enerjinin Temeli', image: '/images/mitoviora.jpg', hasDetail: true },
-  { id: 'mitoregenix', name: 'MitoRegenix X-Y', price: 1350, description: 'Hücresel Yenilenmenin Bilimi', image: '/images/mitoregenix.jpg', hasDetail: true },
-  { id: 'mitoandro', name: 'MitoAndro Y', price: 1150, description: 'Sperm Enerjisini Destekleyen Güç', image: '/images/mitoandro.jpg', hasDetail: true },
-  { id: 'mitoova', name: 'MitoOva X', price: 1150, description: 'Oosit Enerjisini Destekleyen Güç', image: '/images/mitoova.jpg', hasDetail: true },
-  { id: 'erkek-seti', name: 'Erkek Seti', price: 2300, description: 'MitoAndro + MitoRegenix Kombinasyonu', image: '/images/erkek-seti.jpg', hasDetail: false },
-  { id: 'kadin-seti', name: 'Kadın Seti', price: 2300, description: 'MitoOva + MitoRegenix Kombinasyonu', image: '/images/kadin-setiii.jpg', hasDetail: false },
+  { id: 'mitoviora', name: 'MitoViora X-Y', price: 12500, description: 'Hücresel Enerjinin Temeli', image: '/images/mitoviora.jpg', hasDetail: true },
+  { id: 'mitoregenix', name: 'MitoRegenix X-Y', price: 13500, description: 'Hücresel Yenilenmenin Bilimi', image: '/images/mitoregenix.jpg', hasDetail: true },
+  { id: 'mitoandro', name: 'MitoAndro Y', price: 11500, description: 'Sperm Enerjisini Destekleyen Güç', image: '/images/mitoandro.jpg', hasDetail: true },
+  { id: 'mitoova', name: 'MitoOva X', price: 11500, description: 'Oosit Enerjisini Destekleyen Güç', image: '/images/mitoova.jpg', hasDetail: true },
+  { id: 'erkek-seti', name: 'Erkek Seti', price: 23000, description: 'MitoAndro + MitoRegenix Kombinasyonu', image: '/images/erkek-seti.jpg', hasDetail: false },
+  { id: 'kadin-seti', name: 'Kadın Seti', price: 23000, description: 'MitoOva + MitoRegenix Kombinasyonu', image: '/images/kadin-setiii.jpg', hasDetail: false },
 ]
 
 function handleAddToCart(product: any) {
