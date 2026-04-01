@@ -7,7 +7,7 @@ const products = [
   { id: 'mitoandro', name: 'MitoAndro Y', price: 11500, description: 'Sperm Enerjisini Destekleyen Güç', image: '/images/mitoandro.jpg', hasDetail: true },
   { id: 'mitoova', name: 'MitoOva X', price: 11500, description: 'Oosit Enerjisini Destekleyen Güç', image: '/images/mitoova.jpg', hasDetail: true },
   { id: 'erkek-seti', name: 'Erkek Seti', price: 23000, description: 'MitoAndro + MitoRegenix Kombinasyonu', image: '/images/erkek-seti.jpg', hasDetail: false },
-  { id: 'kadin-seti', name: 'Kadın Seti', price: 23000, description: 'MitoOva + MitoRegenix Kombinasyonu', image: '/images/kadin-setiii.jpg', hasDetail: false },
+  { id: 'kadin-seti', name: 'Kadın Seti', price: 23000, description: 'MitoOva + MitoRegenix Kombinasyonu', image: '/images/kadin-seti.jpg', hasDetail: false },
 ]
 
 function handleAddToCart(product: any) {
