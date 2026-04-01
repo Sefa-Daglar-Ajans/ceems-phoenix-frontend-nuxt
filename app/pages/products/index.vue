@@ -1,17 +1,26 @@
 <script setup lang="ts">
+import { useProductsQuery } from '~/queries/useProductsQuery'
+import { useAddToCartMutation } from '~/queries/useCartMutations'
+import type { Product } from '~/types'
+
+const { data: products, isPending } = useProductsQuery()
 const cartStore = useCartStore()
+const auth = useAuthStore()
+const { mutate: addToServerCart } = useAddToCartMutation()
 
-const products = [
-  { id: 'mitoviora', name: 'MitoViora X-Y', price: 12500, description: 'Hücresel Enerjinin Temeli', image: '/images/mitoviora.jpg', hasDetail: true },
-  { id: 'mitoregenix', name: 'MitoRegenix X-Y', price: 13500, description: 'Hücresel Yenilenmenin Bilimi', image: '/images/mitoregenix.jpg', hasDetail: true },
-  { id: 'mitoandro', name: 'MitoAndro Y', price: 11500, description: 'Sperm Enerjisini Destekleyen Güç', image: '/images/mitoandro.jpg', hasDetail: true },
-  { id: 'mitoova', name: 'MitoOva X', price: 11500, description: 'Oosit Enerjisini Destekleyen Güç', image: '/images/mitoova.jpg', hasDetail: true },
-  { id: 'erkek-seti', name: 'Erkek Seti', price: 23000, description: 'MitoAndro + MitoRegenix Kombinasyonu', image: '/images/erkek-seti.jpg', hasDetail: false },
-  { id: 'kadin-seti', name: 'Kadın Seti', price: 23000, description: 'MitoOva + MitoRegenix Kombinasyonu', image: '/images/kadin-seti.jpg', hasDetail: false },
-]
-
-function handleAddToCart(product: any) {
-  cartStore.addToCart(product)
+function handleAddToCart(product: Product) {
+  if (auth.isLoggedIn) {
+    addToServerCart({ productId: product.id, quantity: 1 })
+  }
+  else {
+    cartStore.addToCart({
+      id: product.id,
+      name: product.name,
+      price: Number(product.price),
+      image: product.image || '',
+      description: product.description || '',
+    })
+  }
 }
 
 useHead({ title: 'Ürünler - CEEMS Phoenix' })
@@ -26,18 +35,33 @@ useHead({ title: 'Ürünler - CEEMS Phoenix' })
         <USeparator class="mt-4 mx-auto" style="width: 60px;" />
       </div>
 
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div v-if="isPending" class="flex justify-center py-20">
+        <UIcon name="i-heroicons-arrow-path" class="size-8 text-brand-500 animate-spin" />
+      </div>
+
+      <div v-else-if="products?.length" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
         <div v-for="product in products" :key="product.id" class="group">
-          <!-- Sadece detay sayfası olanları linkli yapıyoruz -->
-          <NuxtLink :to="product.hasDetail ? `/products/${product.id}` : '#'" :class="{ 'cursor-default': !product.hasDetail }">
+          <NuxtLink :to="`/products/${product.id}`">
             <ProductCard
-              :product="product"
+              :product="{
+                id: product.id,
+                name: product.name,
+                price: Number(product.price),
+                image: product.image || '',
+                description: product.description || '',
+                hasDetail: true,
+              }"
               show-price
               show-add-to-cart
               @add-to-cart="handleAddToCart(product)"
             />
           </NuxtLink>
         </div>
+      </div>
+
+      <div v-else class="text-center py-20 text-gray-400">
+        <UIcon name="i-heroicons-cube" class="size-16 mx-auto mb-4" />
+        <p class="text-lg">Henüz ürün bulunmamaktadır.</p>
       </div>
     </div>
   </div>
