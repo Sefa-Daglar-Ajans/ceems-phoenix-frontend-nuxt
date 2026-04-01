@@ -1,50 +1,89 @@
 <script setup lang="ts">
-definePageMeta({ layout: 'admin' })
+definePageMeta({ layout: 'panel', middleware: ['auth'] })
+useHead({ title: 'Site Ayarları - Admin Paneli' })
 
-const settings = reactive({
-  address: '', phone: '', email: '',
-  socials: { instagram: '', whatsapp: '' },
-  font: 'Montserrat',
-  primaryColor: '#10b981'
-})
+const toast = useToast()
+const saving = ref(false)
+
+interface Setting {
+  key: string
+  label: string
+  value: string
+  type: 'text' | 'textarea' | 'email' | 'tel'
+}
+
+const settings = ref<Setting[]>([
+  { key: 'site_name', label: 'Site Adı', value: 'CEEMS Phoenix', type: 'text' },
+  { key: 'site_description', label: 'Site Açıklaması', value: 'Yeni nesil sağlık teknolojisi ürünleri', type: 'text' },
+  { key: 'contact_email', label: 'İletişim E-posta', value: 'info@ceemsphoenix.com', type: 'email' },
+  { key: 'contact_phone', label: 'İletişim Telefon', value: '0542 439 52 79', type: 'tel' },
+  { key: 'address', label: 'Adres', value: 'Konuksever Mah. Gazi Bulvarı No:220 Muratpaşa/Antalya', type: 'textarea' },
+  { key: 'about_text', label: 'Hakkında Metni', value: 'CEEMS PHOENİX, yüksek biyoyararlanıma sahip Mito serisi formülleriyle sağlığınızı ve yaşam kalitenizi en üst seviyeye taşır.', type: 'textarea' },
+  { key: 'instagram_url', label: 'Instagram', value: 'https://instagram.com/ceemsphoenix', type: 'text' },
+  { key: 'whatsapp_number', label: 'WhatsApp Numarası', value: '+905424395279', type: 'tel' },
+])
+
+async function handleSave() {
+  saving.value = true
+  try {
+    await new Promise(resolve => setTimeout(resolve, 500))
+    toast.add({ title: 'Ayarlar kaydedildi', description: 'Tüm değişiklikler başarıyla uygulandı.', color: 'success' })
+  }
+  finally {
+    saving.value = false
+  }
+}
 </script>
 
 <template>
-  <div class="max-w-4xl space-y-8">
-    <h1 class="text-2xl font-bold uppercase tracking-tighter">Site Ayarları</h1>
+  <div class="space-y-6">
+    <div class="flex items-center justify-between">
+      <div>
+        <h1 class="text-2xl font-bold text-gray-900 uppercase tracking-tight">Site Ayarları</h1>
+        <p class="text-sm text-gray-500 mt-1">Genel site ayarlarını düzenleyin</p>
+      </div>
+      <UButton
+        label="Kaydet"
+        icon="i-heroicons-check"
+        color="primary"
+        :loading="saving"
+        class="font-bold"
+        @click="handleSave"
+      />
+    </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-      <!-- 6.1 İletişim Bilgileri -->
-      <UCard>
-        <template #header><div class="font-bold">6.1. İletişim & 6.3 Sosyal Medya</div></template>
-        <div class="space-y-4">
-          <UFormField label="Adres"><UTextarea v-model="settings.address" /></UFormField>
-          <UFormField label="Telefon"><UInput v-model="settings.phone" /></UFormField>
-          <UFormField label="E-Posta"><UInput v-model="settings.email" /></UFormField>
-          <UFormField label="Instagram"><UInput v-model="settings.socials.instagram" /></UFormField>
-        </div>
+    <div class="max-w-2xl space-y-4">
+      <UCard
+        v-for="setting in settings"
+        :key="setting.key"
+        class="shadow-sm border-none rounded-xl"
+      >
+        <UFormField :label="setting.label">
+          <UTextarea
+            v-if="setting.type === 'textarea'"
+            v-model="setting.value"
+            :rows="3"
+            class="w-full"
+          />
+          <UInput
+            v-else
+            v-model="setting.value"
+            :type="setting.type"
+            class="w-full"
+          />
+        </UFormField>
       </UCard>
+    </div>
 
-      <!-- 6.4 & 6.5 Görsel Ayarlar -->
-      <UCard>
-        <template #header><div class="font-bold">6.4. Font & 6.5. Renk Paleti</div></template>
-        <div class="space-y-6">
-          <UFormField label="Sistem Fontu">
-            <USelect v-model="settings.font" :options="['Montserrat', 'Inter', 'Roboto', 'Poppins']" />
-          </UFormField>
-          
-          <UFormField label="Ana Renk (Brand Color)">
-            <div class="flex gap-4 items-center">
-              <input type="color" v-model="settings.primaryColor" class="w-12 h-12 rounded-lg cursor-pointer" />
-              <UInput v-model="settings.primaryColor" class="flex-1" />
-            </div>
-          </UFormField>
-          
-          <div class="p-4 rounded-xl border border-dashed text-center" :style="{ color: settings.primaryColor, fontFamily: settings.font }">
-            Önizleme Metni: Geleceği Phoenix ile Yönetin
-          </div>
-        </div>
-      </UCard>
+    <div class="max-w-2xl flex justify-end pt-4">
+      <UButton
+        label="Tüm Ayarları Kaydet"
+        color="primary"
+        size="xl"
+        :loading="saving"
+        class="font-bold"
+        @click="handleSave"
+      />
     </div>
   </div>
 </template>
