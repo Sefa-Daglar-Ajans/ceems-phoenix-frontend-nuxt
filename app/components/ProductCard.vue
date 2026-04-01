@@ -10,6 +10,7 @@ interface Props {
     image: string
     description?: string
     statusLabel?: string
+    hasDetail?: boolean
   }
   showPrice?: boolean
   showAddToCart?: boolean
