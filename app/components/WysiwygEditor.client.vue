@@ -7,12 +7,6 @@ import 'tinymce/models/dom/model.min.js'
 import 'tinymce/skins/ui/oxide/skin.js'
 import 'tinymce/skins/ui/oxide/content.js'
 import 'tinymce/skins/content/default/content.js'
-
-// Ensure global is available for @tinymce/tinymce-vue detection in production builds
-if (typeof window !== 'undefined') {
-  ;(window as any).tinymce = tinymce
-}
-
 import 'tinymce/plugins/accordion'
 import 'tinymce/plugins/advlist'
 import 'tinymce/plugins/anchor'
@@ -42,6 +36,11 @@ import 'tinymce/plugins/visualblocks'
 import 'tinymce/plugins/visualchars'
 import 'tinymce/plugins/wordcount'
 
+// Ensure global is available for @tinymce/tinymce-vue detection in production builds
+if (typeof window !== 'undefined') {
+  ;(window as any).tinymce = tinymce
+}
+
 const model = defineModel<string>({ default: '' })
 
 defineProps<{
@@ -54,8 +53,8 @@ const editorInit = {
   min_height: 500,
   resize: true,
   skin: false,
-  content_css: 'default',
-  skin_url: 'default',
+  // content_css: 'default',
+  // skin_url: 'default',
 
   plugins: [
     'accordion', 'advlist', 'anchor', 'autolink', 'autoresize',
