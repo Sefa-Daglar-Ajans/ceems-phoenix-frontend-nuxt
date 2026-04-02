@@ -37,4 +37,18 @@ export default defineNuxtConfig({
       apiBase: process.env.NUXT_PUBLIC_API_BASE || 'http://localhost:4000',
     },
   },
+
+  vite: {
+    optimizeDeps: {
+      include: [
+        'tinymce/tinymce',
+        '@tinymce/tinymce-vue',
+        'tinymce/icons/default/icons.min.js',
+        'tinymce/themes/silver/theme.min.js',
+        'tinymce/models/dom/model.min.js',
+        'axios',
+        'zod',
+      ],
+    },
+  },
 })

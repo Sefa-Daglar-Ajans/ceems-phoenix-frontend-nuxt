@@ -1,12 +1,13 @@
 <script setup lang="ts">
-import Editor from '@tinymce/tinymce-vue'
 import tinymce from 'tinymce/tinymce'
 import 'tinymce/icons/default/icons.min.js'
 import 'tinymce/themes/silver/theme.min.js'
 import 'tinymce/models/dom/model.min.js'
-import 'tinymce/skins/ui/oxide/skin.js'
-import 'tinymce/skins/ui/oxide/content.js'
-import 'tinymce/skins/content/default/content.js'
+
+import 'tinymce/skins/ui/oxide/skin.css'
+import contentUiCss from 'tinymce/skins/ui/oxide/content.css?inline'
+import contentCss from 'tinymce/skins/content/default/content.css?inline'
+
 import 'tinymce/plugins/accordion'
 import 'tinymce/plugins/advlist'
 import 'tinymce/plugins/anchor'
@@ -36,7 +37,8 @@ import 'tinymce/plugins/visualblocks'
 import 'tinymce/plugins/visualchars'
 import 'tinymce/plugins/wordcount'
 
-// Ensure global is available for @tinymce/tinymce-vue detection in production builds
+import Editor from '@tinymce/tinymce-vue'
+
 if (typeof window !== 'undefined') {
   ;(window as any).tinymce = tinymce
 }
@@ -53,8 +55,8 @@ const editorInit = {
   min_height: 500,
   resize: true,
   skin: false,
-  // content_css: 'default',
-  // skin_url: 'default',
+  content_css: false as const,
+  content_style: [contentUiCss, contentCss].join('\n'),
 
   plugins: [
     'accordion', 'advlist', 'anchor', 'autolink', 'autoresize',
