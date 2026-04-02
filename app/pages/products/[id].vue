@@ -123,7 +123,7 @@ useHead(() => ({
       </section>
 
       <section v-if="product.htmlContent" class="py-20">
-        <HtmlContent :content="product.htmlContent" />
+        <RichContent :content="product.htmlContent" />
       </section>
     </template>
 

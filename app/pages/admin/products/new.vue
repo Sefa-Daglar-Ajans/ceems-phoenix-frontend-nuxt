@@ -135,7 +135,7 @@ async function handleCreate() {
             <span class="text-brand-600 font-medium">&lt;/&gt;</span> butonuyla kaynak koda geçiş yapabilirsiniz.
           </p>
         </template>
-        <TipTapEditor v-model="form.htmlContent" placeholder="Ürün detaylarını buraya yazın..." />
+        <WysiwygEditor v-model="form.htmlContent" placeholder="Ürün detaylarını buraya yazın..." />
       </UCard>
 
       <div class="flex justify-end gap-3">
