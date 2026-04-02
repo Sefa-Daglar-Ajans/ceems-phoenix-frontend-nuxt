@@ -171,8 +171,7 @@ async function handleSave() {
         <template #header>
           <h2 class="text-lg font-semibold text-gray-900">Detaylı İçerik</h2>
           <p class="text-sm text-gray-500 mt-0.5">
-            HTML, CSS ve JavaScript kodu da dahil olmak üzere zengin içerik ekleyebilirsiniz.
-            <span class="text-brand-600 font-medium">&lt;/&gt;</span> butonuyla kaynak koda geçiş yapabilirsiniz.
+            Zengin metin içeriği için editörü, tam HTML dokümanları (CSS/JS dahil) için HTML Kaynak modunu kullanın.
           </p>
         </template>
         <WysiwygEditor v-model="form.htmlContent" placeholder="Ürün detaylarını buraya yazın..." />

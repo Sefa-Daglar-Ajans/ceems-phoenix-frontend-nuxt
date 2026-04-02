@@ -49,6 +49,53 @@ defineProps<{
   placeholder?: string
 }>()
 
+const mode = ref<'wysiwyg' | 'html'>('wysiwyg')
+const htmlSource = ref('')
+const previewHeight = ref(300)
+const previewRef = ref<HTMLIFrameElement | null>(null)
+const nonce = Math.random().toString(36).slice(2)
+
+const isFullDocument = computed(() => {
+  const c = model.value
+  return c.includes('<!DOCTYPE') || c.includes('<html') || c.includes('<head')
+})
+
+function switchToHtml() {
+  htmlSource.value = model.value
+  mode.value = 'html'
+}
+
+function switchToWysiwyg() {
+  model.value = htmlSource.value
+  mode.value = 'wysiwyg'
+}
+
+function onHtmlInput(e: Event) {
+  const val = (e.target as HTMLTextAreaElement).value
+  htmlSource.value = val
+  model.value = val
+}
+
+const previewSrcdoc = computed(() => {
+  const resize = `<script>(function(){var n="${nonce}";function s(){parent.postMessage({type:"editor-preview",nonce:n,height:document.documentElement.scrollHeight},"*")}new ResizeObserver(s).observe(document.body);window.addEventListener("load",s);s()})()</` + 'script>'
+  const src = htmlSource.value
+  if (src.includes('</body>')) return src.replace('</body>', resize + '</body>')
+  return src + resize
+})
+
+function onPreviewMessage(e: MessageEvent) {
+  if (e.data?.type === 'editor-preview' && e.data?.nonce === nonce && typeof e.data?.height === 'number') {
+    previewHeight.value = Math.max(200, Math.min(e.data.height, 600))
+  }
+}
+
+onMounted(() => window.addEventListener('message', onPreviewMessage))
+onBeforeUnmount(() => window.removeEventListener('message', onPreviewMessage))
+
+watch(isFullDocument, (full) => {
+  if (full && mode.value === 'wysiwyg') switchToHtml()
+}, { immediate: true })
+
 const editorInit = {
   promotion: false,
   branding: false,
@@ -121,11 +168,62 @@ const editorInit = {
 
 <template>
   <div class="wysiwyg-editor">
+    <div class="flex items-center gap-2 mb-3">
+      <UButtonGroup>
+        <UButton
+          size="sm"
+          :color="mode === 'wysiwyg' ? 'primary' : 'neutral'"
+          :variant="mode === 'wysiwyg' ? 'solid' : 'outline'"
+          icon="i-heroicons-pencil-square"
+          label="Editör"
+          :disabled="isFullDocument && mode === 'html'"
+          @click="switchToWysiwyg"
+        />
+        <UButton
+          size="sm"
+          :color="mode === 'html' ? 'primary' : 'neutral'"
+          :variant="mode === 'html' ? 'solid' : 'outline'"
+          icon="i-heroicons-code-bracket"
+          label="HTML Kaynak"
+          @click="switchToHtml"
+        />
+      </UButtonGroup>
+
+      <span v-if="isFullDocument && mode === 'html'" class="text-xs text-amber-600 flex items-center gap-1">
+        <UIcon name="i-heroicons-exclamation-triangle-16-solid" class="size-3.5" />
+        Tam HTML doküman — yalnızca kaynak modunda düzenlenebilir
+      </span>
+    </div>
+
     <Editor
+      v-if="mode === 'wysiwyg'"
       v-model="model"
       license-key="gpl"
       :init="editorInit"
     />
+
+    <div v-else class="html-source-editor space-y-3">
+      <textarea
+        :value="htmlSource"
+        spellcheck="false"
+        class="w-full min-h-[500px] rounded-xl border border-gray-200 bg-gray-950 text-gray-100 p-4 font-mono text-sm leading-relaxed focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 resize-y"
+        @input="onHtmlInput"
+      />
+
+      <div v-if="htmlSource.trim()" class="rounded-xl border border-gray-200 overflow-hidden">
+        <div class="bg-gray-50 px-4 py-2 border-b border-gray-200 flex items-center gap-2">
+          <UIcon name="i-heroicons-eye" class="size-4 text-gray-400" />
+          <span class="text-xs font-medium text-gray-500 uppercase tracking-wider">Önizleme</span>
+        </div>
+        <iframe
+          ref="previewRef"
+          :srcdoc="previewSrcdoc"
+          :style="{ height: previewHeight + 'px' }"
+          class="w-full border-0"
+          sandbox="allow-scripts"
+        />
+      </div>
+    </div>
   </div>
 </template>
 
