@@ -1,8 +1,23 @@
+import { resolve, dirname } from 'node:path'
+import { fileURLToPath } from 'node:url'
+
+const __dirname = dirname(fileURLToPath(import.meta.url))
+
 export default defineNuxtConfig({
   future: { compatibilityVersion: 5 },
   compatibilityDate: '2025-07-15',
   ssr: true,
   devtools: { enabled: true },
+
+  nitro: {
+    publicAssets: [
+      {
+        baseURL: '/tinymce',
+        dir: resolve(__dirname, 'node_modules/tinymce'),
+        maxAge: 60 * 60 * 24 * 30,
+      },
+    ],
+  },
 
   modules: [
     '@nuxt/ui',
