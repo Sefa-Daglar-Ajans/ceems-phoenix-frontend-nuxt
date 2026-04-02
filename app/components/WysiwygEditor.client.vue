@@ -122,7 +122,6 @@ const editorInit = {
   <div class="wysiwyg-editor">
     <Editor
       v-model="model"
-      tinymce-script-src="/tinymce/tinymce.min.js"
       license-key="gpl"
       :init="editorInit"
     />
