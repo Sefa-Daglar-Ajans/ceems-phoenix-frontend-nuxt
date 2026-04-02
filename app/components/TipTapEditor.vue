@@ -61,6 +61,12 @@ watch(model, (val) => {
   }
 })
 
+watch(sourceCode, (val) => {
+  if (sourceMode.value) {
+    model.value = val
+  }
+})
+
 function toggleSourceMode() {
   if (!editor.value) return
 
