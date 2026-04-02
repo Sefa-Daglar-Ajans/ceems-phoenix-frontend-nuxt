@@ -55,6 +55,18 @@ const previewHeight = ref(300)
 const previewRef = ref<HTMLIFrameElement | null>(null)
 const nonce = Math.random().toString(36).slice(2)
 
+const monacoOptions: Record<string, unknown> = {
+  minimap: { enabled: false },
+  wordWrap: 'on',
+  fontSize: 14,
+  lineNumbers: 'on',
+  scrollBeyondLastLine: false,
+  automaticLayout: true,
+  tabSize: 2,
+  formatOnPaste: true,
+  bracketPairColorization: { enabled: true },
+}
+
 const isFullDocument = computed(() => {
   const c = model.value
   return c.includes('<!DOCTYPE') || c.includes('<html') || c.includes('<head')
@@ -70,11 +82,9 @@ function switchToWysiwyg() {
   mode.value = 'wysiwyg'
 }
 
-function onHtmlInput(e: Event) {
-  const val = (e.target as HTMLTextAreaElement).value
-  htmlSource.value = val
+watch(htmlSource, (val) => {
   model.value = val
-}
+})
 
 const previewSrcdoc = computed(() => {
   const resize = `<script>(function(){var n="${nonce}";function s(){parent.postMessage({type:"editor-preview",nonce:n,height:document.documentElement.scrollHeight},"*")}new ResizeObserver(s).observe(document.body);window.addEventListener("load",s);s()})()</` + 'script>'
@@ -203,12 +213,14 @@ const editorInit = {
     />
 
     <div v-else class="html-source-editor space-y-3">
-      <textarea
-        :value="htmlSource"
-        spellcheck="false"
-        class="w-full min-h-[500px] rounded-xl border border-gray-200 bg-gray-950 text-gray-100 p-4 font-mono text-sm leading-relaxed focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 resize-y"
-        @input="onHtmlInput"
-      />
+      <div class="rounded-xl border border-gray-200 overflow-hidden">
+        <MonacoEditor
+          v-model="htmlSource"
+          lang="html"
+          :options="monacoOptions"
+          class="h-[500px]"
+        />
+      </div>
 
       <div v-if="htmlSource.trim()" class="rounded-xl border border-gray-200 overflow-hidden">
         <div class="bg-gray-50 px-4 py-2 border-b border-gray-200 flex items-center gap-2">

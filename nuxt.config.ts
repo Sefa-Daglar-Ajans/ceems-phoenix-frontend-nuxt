@@ -13,7 +13,13 @@ export default defineNuxtConfig({
     '@pinia/nuxt',
     '@pinia/colada-nuxt',
     '@vueuse/nuxt',
+    'nuxt-monaco-editor',
   ],
+
+  monacoEditor: {
+    locale: 'tr',
+    optimizeMonacoDeps: false,
+  },
 
   css: ['~/assets/css/main.css'],
 
