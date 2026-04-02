@@ -1,11 +1,16 @@
 <script setup lang="ts">
-import 'tinymce/tinymce'
+import tinymce from 'tinymce/tinymce'
 import 'tinymce/icons/default/icons.min.js'
 import 'tinymce/themes/silver/theme.min.js'
 import 'tinymce/models/dom/model.min.js'
 import 'tinymce/skins/ui/oxide/skin.js'
 import 'tinymce/skins/ui/oxide/content.js'
 import 'tinymce/skins/content/default/content.js'
+
+// Ensure global is available for @tinymce/tinymce-vue detection in production builds
+if (typeof window !== 'undefined') {
+  ;(window as any).tinymce = tinymce
+}
 
 import 'tinymce/plugins/accordion'
 import 'tinymce/plugins/advlist'
@@ -46,8 +51,8 @@ defineProps<{
 
 const editorInit = {
   license_key: 'gpl',
-  skin_url: 'default',
-  content_css: 'default',
+  skin: false,
+  content_css: false,
   promotion: false,
   branding: false,
   min_height: 500,
