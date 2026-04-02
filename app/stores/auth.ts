@@ -18,6 +18,8 @@ export interface AuthUser {
 export const useAuthStore = defineStore('auth', () => {
   const accessToken = ref<string | null>(null)
   const user = ref<AuthUser | null>(null)
+  const initialized = ref(false)
+  let _initPromise: Promise<void> | null = null
 
   const isLoggedIn = computed(() => !!accessToken.value && !!user.value)
   const isAdmin = computed(() => user.value?.role === 'ADMIN')
@@ -54,6 +56,31 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
+  /**
+   * Restores the session from the httpOnly refresh-token cookie.
+   * Called once on client startup; deduplicates concurrent calls.
+   */
+  function init(): Promise<void> {
+    if (_initPromise) return _initPromise
+
+    _initPromise = (async () => {
+      try {
+        await refresh()
+        if (accessToken.value) {
+          await fetchMe()
+        }
+      }
+      catch {
+        clearAuth()
+      }
+      finally {
+        initialized.value = true
+      }
+    })()
+
+    return _initPromise
+  }
+
   function logout() {
     api().post('/auth/logout').catch(() => {})
     clearAuth()
@@ -63,6 +90,7 @@ export const useAuthStore = defineStore('auth', () => {
   return {
     accessToken,
     user,
+    initialized,
     isLoggedIn,
     isAdmin,
     isDoctor,
@@ -71,6 +99,7 @@ export const useAuthStore = defineStore('auth', () => {
     clearAuth,
     refresh,
     fetchMe,
+    init,
     logout,
   }
 })
