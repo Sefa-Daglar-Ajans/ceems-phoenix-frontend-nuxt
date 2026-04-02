@@ -17,6 +17,7 @@ COPY --from=build /app/.output .output
 ENV NODE_ENV=production
 ENV NUXT_HOST=0.0.0.0
 ENV NUXT_PORT=3000
+ENV NUXT_PUBLIC_API_BASE=https://api.ceemsphoenix.com
 
 EXPOSE 3000
 

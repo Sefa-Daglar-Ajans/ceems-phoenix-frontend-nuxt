@@ -4,37 +4,8 @@ services:
       context: .
       dockerfile: Dockerfile
     environment:
-      - NODE_ENV=production
-      - NUXT_HOST=0.0.0.0
-      - NUXT_PORT=3000
-      # Future: API base URL for NestJS backend
-      # - NUXT_PUBLIC_API_BASE=http://backend:4000
+      - NODE_ENV=${NODE_ENV}
+      - NUXT_HOST=${NUXT_HOST}
+      - NUXT_PORT=${NUXT_PORT}
+      - NUXT_PUBLIC_API_BASE=${NUXT_PUBLIC_API_BASE}
     restart: unless-stopped
-
-  # Future: NestJS backend
-  # backend:
-  #   build:
-  #     context: ../ceems-phoenix-backend
-  #     dockerfile: Dockerfile
-  #   ports:
-  #     - "4000:4000"
-  #   environment:
-  #     - NODE_ENV=production
-  #     - DATABASE_URL=postgresql://postgres:postgres@supabase-db:5432/postgres
-  #   depends_on:
-  #     - supabase-db
-  #   restart: unless-stopped
-
-  # Future: Self-hosted Supabase (use official docker-compose from supabase)
-  # supabase-db:
-  #   image: supabase/postgres:15.1.0.147
-  #   ports:
-  #     - "5432:5432"
-  #   environment:
-  #     - POSTGRES_PASSWORD=postgres
-  #   volumes:
-  #     - supabase-data:/var/lib/postgresql/data
-  #   restart: unless-stopped
-
-# volumes:
-#   supabase-data:
