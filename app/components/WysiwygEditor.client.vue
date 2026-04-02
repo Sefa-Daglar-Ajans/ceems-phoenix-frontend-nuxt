@@ -8,7 +8,6 @@ defineProps<{
 }>()
 
 const editorInit = {
-  license_key: 'gpl',
   promotion: false,
   branding: false,
   min_height: 500,
@@ -80,6 +79,7 @@ const editorInit = {
     <Editor
       v-model="model"
       tinymce-script-src="/tinymce/tinymce.min.js"
+      license-key="gpl"
       :init="editorInit"
     />
   </div>
