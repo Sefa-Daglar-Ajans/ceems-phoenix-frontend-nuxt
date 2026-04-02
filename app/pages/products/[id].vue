@@ -15,6 +15,21 @@ const { data: product, isPending } = useQuery({
   query: () => api().get<Product>(`/products/${productId}`).then(r => r.data),
 })
 
+const activeImageIndex = ref(0)
+
+const productImages = computed(() => {
+  if (!product.value) return []
+  if (product.value.images?.length) {
+    return product.value.images.map(img => ({ url: img.url, alt: img.alt || product.value!.name }))
+  }
+  if (product.value.image) {
+    return [{ url: product.value.image, alt: product.value.name }]
+  }
+  return []
+})
+
+const activeImage = computed(() => productImages.value[activeImageIndex.value])
+
 function handleAddToCart() {
   if (!product.value) return
 
@@ -26,7 +41,7 @@ function handleAddToCart() {
       id: product.value.id,
       name: product.value.name,
       price: Number(product.value.price),
-      image: product.value.image || '',
+      image: productImages.value[0]?.url || '',
       description: product.value.description || '',
     })
   }
@@ -46,7 +61,7 @@ useHead(() => ({
     <template v-else-if="product">
       <section class="bg-gray-50 py-20 border-b">
         <div class="layout-container">
-          <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
             <div>
               <UBadge color="primary" variant="subtle" size="lg" class="mb-4">
                 {{ product.series || 'PHOENİX MİTO SERİSİ' }}
@@ -80,13 +95,28 @@ useHead(() => ({
                 SEPETE EKLE
               </UButton>
             </div>
-            <div class="flex justify-center">
-              <NuxtImg
-                v-if="product.image"
-                :src="product.image"
-                :alt="product.name"
-                class="rounded-3xl shadow-2xl max-w-md w-full"
-              />
+
+            <div v-if="productImages.length" class="space-y-4">
+              <div class="aspect-square rounded-3xl overflow-hidden shadow-2xl bg-gray-100">
+                <img
+                  v-if="activeImage"
+                  :src="activeImage.url"
+                  :alt="activeImage.alt"
+                  class="w-full h-full object-cover"
+                >
+              </div>
+
+              <div v-if="productImages.length > 1" class="flex gap-2 overflow-x-auto pb-1">
+                <button
+                  v-for="(img, i) in productImages"
+                  :key="img.url"
+                  class="shrink-0 w-20 h-20 rounded-xl overflow-hidden border-2 transition-all"
+                  :class="i === activeImageIndex ? 'border-brand-500 ring-2 ring-brand-200' : 'border-gray-200 hover:border-gray-300'"
+                  @click="activeImageIndex = i"
+                >
+                  <img :src="img.url" :alt="img.alt" class="w-full h-full object-cover">
+                </button>
+              </div>
             </div>
           </div>
         </div>

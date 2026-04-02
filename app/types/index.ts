@@ -1,3 +1,12 @@
+export interface ProductImage {
+  id: number
+  productId: number
+  url: string
+  alt?: string
+  sortOrder: number
+  createdAt: string
+}
+
 export interface Product {
   id: number
   name: string
@@ -10,6 +19,7 @@ export interface Product {
   stock: number
   stockStatus: 'IN_STOCK' | 'OUT_OF_STOCK' | 'LOW_STOCK'
   image?: string
+  images: ProductImage[]
   isActive: boolean
   createdAt: string
   updatedAt: string

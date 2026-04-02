@@ -1,23 +1,29 @@
 <script setup lang="ts">
-import { z } from 'zod'
-import { UBadge, UButton } from '#components'
+import { UBadge, UButton, UIcon } from '#components'
 import { useProductsQuery } from '~/queries/useProductsQuery'
-import { useCreateProductMutation, useDeleteProductMutation } from '~/queries/useAdminMutations'
-import type { Product } from '~/types'
+import { useDeleteProductMutation } from '~/queries/useAdminMutations'
 
 definePageMeta({ layout: 'panel', middleware: ['auth'] })
 useHead({ title: 'Ürünler - Admin Paneli' })
 
 const toast = useToast()
-const { fieldErrors, clearErrors, getFieldError, setBackendErrors } = useFormErrors()
-const showCreateModal = ref(false)
-
 const { data: products, isPending } = useProductsQuery()
-const { mutateAsync: createProduct, isPending: creating } = useCreateProductMutation()
 const { mutate: deleteProduct } = useDeleteProductMutation()
 
 const columns = [
   { accessorKey: 'id', header: 'ID' },
+  {
+    id: 'image',
+    header: 'Görsel',
+    cell: ({ row }: any) => {
+      const src = row.original.images?.[0]?.url || row.original.image
+      return src
+        ? h('img', { src, alt: row.original.name, class: 'w-10 h-10 rounded-lg object-cover' })
+        : h('div', { class: 'w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center' },
+            h(UIcon, { name: 'i-heroicons-photo', class: 'size-5 text-gray-300' }),
+          )
+    },
+  },
   { accessorKey: 'name', header: 'Ürün Adı' },
   { accessorKey: 'sku', header: 'SKU' },
   { accessorKey: 'series', header: 'Seri' },
@@ -61,47 +67,6 @@ const columns = [
     ]),
   },
 ]
-
-const createSchema = z.object({
-  name: z.string().min(1, 'Ürün adı zorunludur'),
-  sku: z.string().min(1, 'SKU zorunludur'),
-  series: z.string().optional(),
-  description: z.string().min(1, 'Açıklama zorunludur'),
-  price: z.number({ invalid_type_error: 'Fiyat sayı olmalıdır' }).positive('Fiyat pozitif olmalıdır'),
-  stock: z.number().int().min(0, 'Stok negatif olamaz'),
-  slogan: z.string().optional(),
-})
-
-const createForm = reactive({
-  name: '',
-  sku: '',
-  series: '',
-  description: '',
-  price: 0,
-  stock: 0,
-  slogan: '',
-})
-
-async function handleCreate() {
-  clearErrors()
-  const result = createSchema.safeParse({ ...createForm, price: Number(createForm.price), stock: Number(createForm.stock) })
-  if (!result.success) {
-    for (const issue of result.error.issues) {
-      fieldErrors.value[issue.path[0] as string] = issue.message
-    }
-    return
-  }
-
-  try {
-    await createProduct(result.data)
-    toast.add({ title: 'Ürün oluşturuldu', color: 'success' })
-    showCreateModal.value = false
-    Object.assign(createForm, { name: '', sku: '', series: '', description: '', price: 0, stock: 0, slogan: '' })
-  }
-  catch (error) {
-    setBackendErrors(error)
-  }
-}
 </script>
 
 <template>
@@ -115,7 +80,7 @@ async function handleCreate() {
         label="Yeni Ürün"
         icon="i-heroicons-plus"
         color="primary"
-        @click="showCreateModal = true"
+        to="/admin/products/new"
       />
     </div>
 
@@ -134,43 +99,5 @@ async function handleCreate() {
         </template>
       </UTable>
     </UCard>
-
-    <UModal v-model:open="showCreateModal" title="Yeni Ürün Ekle">
-      <template #body>
-        <div class="space-y-4">
-          <UFormField label="Ürün Adı" :error="getFieldError('name')">
-            <UInput v-model="createForm.name" placeholder="MitoViora X-Y" class="w-full" />
-          </UFormField>
-          <div class="grid grid-cols-2 gap-4">
-            <UFormField label="SKU" :error="getFieldError('sku')">
-              <UInput v-model="createForm.sku" placeholder="MITO-VIORA-XY" class="w-full" />
-            </UFormField>
-            <UFormField label="Seri">
-              <UInput v-model="createForm.series" placeholder="Mito" class="w-full" />
-            </UFormField>
-          </div>
-          <UFormField label="Açıklama" :error="getFieldError('description')">
-            <UTextarea v-model="createForm.description" placeholder="Ürün açıklaması" :rows="3" class="w-full" />
-          </UFormField>
-          <div class="grid grid-cols-2 gap-4">
-            <UFormField label="Fiyat (TL)" :error="getFieldError('price')">
-              <UInput v-model.number="createForm.price" type="number" placeholder="1250" class="w-full" />
-            </UFormField>
-            <UFormField label="Stok" :error="getFieldError('stock')">
-              <UInput v-model.number="createForm.stock" type="number" placeholder="100" class="w-full" />
-            </UFormField>
-          </div>
-          <UFormField label="Slogan">
-            <UInput v-model="createForm.slogan" placeholder="Ürün sloganı" class="w-full" />
-          </UFormField>
-        </div>
-      </template>
-      <template #footer>
-        <div class="flex justify-end gap-3">
-          <UButton label="İptal" color="neutral" variant="ghost" @click="showCreateModal = false" />
-          <UButton label="Oluştur" color="primary" :loading="creating" @click="handleCreate" />
-        </div>
-      </template>
-    </UModal>
   </div>
 </template>

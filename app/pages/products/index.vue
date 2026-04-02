@@ -17,7 +17,7 @@ function handleAddToCart(product: Product) {
       id: product.id,
       name: product.name,
       price: Number(product.price),
-      image: product.image || '',
+      image: product.images?.[0]?.url || product.image || '',
       description: product.description || '',
     })
   }
@@ -47,7 +47,7 @@ useHead({ title: 'Ürünler - CEEMS Phoenix' })
                 id: product.id,
                 name: product.name,
                 price: Number(product.price),
-                image: product.image || '',
+                image: product.images?.[0]?.url || product.image || '',
                 description: product.description || '',
                 hasDetail: true,
               }"
