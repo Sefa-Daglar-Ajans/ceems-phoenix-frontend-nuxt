@@ -123,7 +123,7 @@ useHead(() => ({
       </section>
 
       <section v-if="product.htmlContent" class="py-20">
-        <div class="layout-container max-w-4xl prose prose-lg" v-html="product.htmlContent" />
+        <HtmlContent :content="product.htmlContent" />
       </section>
     </template>
 
